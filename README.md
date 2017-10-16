@@ -1,4 +1,4 @@
-# Static Executables
+## Static Executables
 
 Compile static executables in an alpine Docker container with musl.
 
