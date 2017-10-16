@@ -23,11 +23,12 @@ statics-builder: Dockerfile.in
 
 build: statics-builder
 	mkdir -p src output
-	docker run -v $$PWD/src:/src -v $$PWD/build.sh:/src/build.sh -v $$PWD/output:/output statics-builder ./build.sh
+	docker run --rm -v $$PWD/src:/src -v $$PWD/build.sh:/src/build.sh -v $$PWD/output:/output statics-builder ./build.sh
 
 clean:
-	rm -rf src/*/
+	rm -rf src/*/ # keep sources
 	rm -rf output/
 
 cleanall:
 	rm -rf src/ output/
+	docker rmi statics-builder
