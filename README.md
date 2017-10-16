@@ -9,3 +9,6 @@ List of products:
     socat
 
 To build products, type `make`.
+
+Inspired by:
+https://github.com/andrew-d/static-binaries
