@@ -1,0 +1,15 @@
+FROM alpine:latest
+MAINTAINER Matei David <matei@cs.toronto.edu>
+
+RUN apk --update add automake bash build-base curl file git linux-headers tzdata
+
+# use host timezone
+ENV TZ=${TZ}
+RUN ln -snf /usr/share/zoneinfo/${TZ} /etc/localtime && echo ${TZ} > /etc/timezone
+
+# use host id
+RUN addgroup -g ${GROUP_ID} ${GROUP_NAME}
+RUN adduser -u ${USER_ID} -G ${GROUP_NAME} -D ${USER_NAME}
+USER ${USER_NAME}
+
+WORKDIR /src
