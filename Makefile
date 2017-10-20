@@ -10,6 +10,10 @@ ROOT_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 # fake targets
 .PHONY: all statics-builder build clean cleanall
 
+DOCKER_IP = $(shell ifconfig docker0 | grep -o 'inet addr:[0-9.]*' | cut -d: -f2)
+PROXY_PORT = 3128
+INET_PROXY = $(shell nc -zw1 ${DOCKER_IP} ${PROXY_PORT} && echo "http://${DOCKER_IP}:${PROXY_PORT}")
+
 all: build
 
 statics-builder: Dockerfile.in
@@ -19,7 +23,8 @@ statics-builder: Dockerfile.in
 	USER_NAME=$$(id -un) \
 	GROUP_ID=$$(id -g) \
 	GROUP_NAME=$$(id -gn) \
-	envsubst <Dockerfile.in | docker build -t statics-builder -
+	INET_PROXY=${INET_PROXY} \
+	envsubst <Dockerfile.in | cat #docker build -t statics-builder -
 
 build: statics-builder
 	mkdir -p src output
