@@ -108,6 +108,18 @@ socat_defs () {
     }
 }
 
+rsync_defs () {
+    name=rsync
+    version=3.1.2
+    url=https://download.samba.org/pub/rsync/src/${name}-${version}.tar.gz
+    product=bin/rsync
+    commands () {
+        ./configure --prefix=/output CC="/usr/bin/gcc -static"
+        make -j4
+        make install
+    }
+}
+
 build bash
 build libevent
 build ncurses
@@ -115,3 +127,4 @@ build tmux
 build readline
 build openssl
 build socat
+build rsync
