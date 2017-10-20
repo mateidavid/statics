@@ -5,8 +5,9 @@ Compile static executables in an alpine Docker container with musl.
 List of products:
 
     bash
-    tmux
+    rsync
     socat
+    tmux
 
 To build products, type `make`.
 
