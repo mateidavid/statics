@@ -6,7 +6,7 @@ ENV https_proxy=${INET_PROXY}
 ENV HTTP_PROXY=${INET_PROXY}
 ENV HTTPS_PROXY=${INET_PROXY}
 
-RUN apk --update add automake bash build-base curl file git linux-headers tzdata
+RUN apk --update add autoconf automake bash build-base curl file git linux-headers tzdata
 
 # use host timezone
 ENV TZ=${TZ}

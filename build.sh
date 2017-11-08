@@ -13,8 +13,13 @@ build () {
         echo "already built: /output/$product"
         return 0
     fi
-    src_file=$(basename "$url")
-    [ -f "$src_file" ] || curl -LOv "$url"
+    local bn=$(basename "$url")
+    if [[ "$bn" =~ ^${name} ]]; then
+        src_file=$bn
+    else
+        src_file="${name}-${version}.${bn#*.}"
+    fi
+    [ -f "$src_file" ] || curl -Lvk -o "$src_file" "$url"
     dir=$(get_source_dir "$src_file")
     [ -d "$dir" ] || tar -xf "$src_file"
     cd "$dir"
@@ -37,7 +42,7 @@ bash_defs () {
 libevent_defs () {
     name=libevent
     version=2.1.8
-    url=https://github.com/libevent/libevent/releases/download/release-2.1.8-stable/libevent-2.1.8-stable.tar.gz
+    url=https://github.com/libevent/${name}/releases/download/release-${version}-stable/${name}-${version}-stable.tar.gz
     product=lib/libevent.a
     commands () {
         ./configure --prefix=/output --disable-shared
@@ -61,7 +66,7 @@ ncurses_defs () {
 tmux_defs () {
     name=tmux
     version=2.6
-    url=https://github.com/tmux/tmux/releases/download/2.6/tmux-2.6.tar.gz
+    url=https://github.com/tmux/tmux/releases/download/${version}/${name}-${version}.tar.gz
     product=bin/tmux
     commands () {
         ./configure --prefix=/output --enable-static LIBEVENT_CFLAGS="-I/output/include" LIBEVENT_LIBS="-L/output/lib -levent" LIBNCURSES_CFLAGS="-I/output/include/ncurses" LIBNCURSES_LIBS="-L/output/lib -lncurses"
@@ -99,7 +104,7 @@ socat_defs () {
     # ref: https://github.com/andrew-d/static-binaries/blob/master/socat/build.sh
     name=socat
     version=1.7.3.2
-    url=http://www.dest-unreach.org/socat/download/socat-${version}.tar.gz
+    url=http://www.dest-unreach.org/socat/download/${name}-${version}.tar.gz
     product=bin/socat
     commands () {
         ./configure --prefix=/output CC="/usr/bin/gcc -static" CPPFLAGS="-I/output -DNETDB_INTERNAL=-1" LDFLAGS="-L/output"
@@ -120,6 +125,42 @@ rsync_defs () {
     }
 }
 
+pcre_defs () {
+    name=pcre
+    version=8.41
+    url=https://ftp.pcre.org/pub/${name}/${name}-${version}.tar.gz
+    product=lib/libpcre.a
+    commands () {
+        ./configure --prefix=/output --enable-shared=no
+        make -j4
+        make install
+    }
+}
+
+xz_defs () {
+    name=xz
+    version=5.2.3
+    url=https://tukaani.org/${name}/${name}-${version}.tar.gz
+    product=lib/liblzma.a
+    commands () {
+        ./configure --prefix=/output --enable-shared=no
+        make -j4
+        make install
+    }
+}
+
+ag_defs () {
+    name=the_silver_searcher
+    version=2.1.0
+    url=https://github.com/ggreer/${name}/archive/${version}.tar.gz
+    product=bin/ag
+    commands () {
+        ./configure --prefix=/output PCRE_CFLAGS="-I/output/include" PCRE_LIBS="-L/output/lib -lpcre" LZMA_CFLAGS="-I/output/include" LZMA_LIBS="-L/output/lib -llzma" CC="/usr/bin/gcc -static"
+        make -j4
+        make install
+    }
+}
+
 build bash
 build libevent
 build ncurses
@@ -128,3 +169,6 @@ build readline
 build openssl
 build socat
 build rsync
+build pcre
+build xz
+build ag
