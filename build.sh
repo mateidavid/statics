@@ -155,6 +155,10 @@ ag_defs () {
     url=https://github.com/ggreer/${name}/archive/${version}.tar.gz
     product=bin/ag
     commands () {
+        aclocal
+        autoconf
+        autoheader
+        automake --add-missing
         ./configure --prefix=/output PCRE_CFLAGS="-I/output/include" PCRE_LIBS="-L/output/lib -lpcre" LZMA_CFLAGS="-I/output/include" LZMA_LIBS="-L/output/lib -llzma" CC="/usr/bin/gcc -static"
         make -j4
         make install
